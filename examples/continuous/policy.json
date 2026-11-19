@@ -1,0 +1,12 @@
+{
+  "schema_version": "4.2",
+  "contract_id": "framework-cross-component-save",
+  "scenarios": [
+    {
+      "id": "save-no-duplicate",
+      "selector": "#status",
+      "expected": ["idle", "pending", "success"],
+      "network_url": "**/api/save"
+    }
+  ]
+}

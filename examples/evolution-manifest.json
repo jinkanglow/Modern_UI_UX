@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "policy_id": "recommendation-flow-v2",
+  "baseline": {"policy_id": "recommendation-flow-v1", "reward": 7},
+  "objective": {"min_improvement": 1},
+  "safety": {"blocked": 0, "unauthorized": 0, "duplicate_side_effect": 0},
+  "episodes": [
+    {"id": "ep-001", "state": "uncertain", "action": "show_sources_and_ask", "reward": 2, "terminal": "success", "evidence_id": "browser-001"},
+    {"id": "ep-002", "state": "error", "action": "preserve_input_and_retry", "reward": 1, "terminal": "success", "evidence_id": "browser-002"},
+    {"id": "ep-003", "state": "result", "action": "accept_with_authorization", "reward": 5, "terminal": "success", "evidence_id": "browser-003"}
+  ]
+}

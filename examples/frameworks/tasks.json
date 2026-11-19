@@ -1,0 +1,152 @@
+{
+  "schema_version": "2.2",
+  "id": "cross-framework-task-contract",
+  "contract_id": "framework-cross-component-save",
+  "tasks": [
+    {
+      "id": "task-validation-blocks-empty-name",
+      "actor": "Fixture test user",
+      "goal": "Prevent empty-name submissions",
+      "completion_condition": "All explicitly required interaction assertions pass",
+      "required_scenarios": [
+        "validation-blocks-empty-name"
+      ],
+      "required_assertions": [
+        {
+          "scenario": "validation-blocks-empty-name",
+          "step": 1,
+          "assertion": 1,
+          "check": "text",
+          "target": "#status",
+          "equals": "Name required"
+        },
+        {
+          "scenario": "validation-blocks-empty-name",
+          "step": 1,
+          "assertion": 2,
+          "check": "request_count",
+          "target": "**/api/save",
+          "equals": 0
+        }
+      ]
+    },
+    {
+      "id": "task-save-no-duplicate",
+      "actor": "Fixture test user",
+      "goal": "Save once without duplicate API requests",
+      "completion_condition": "All explicitly required interaction assertions pass",
+      "required_scenarios": [
+        "save-no-duplicate"
+      ],
+      "required_assertions": [
+        {
+          "scenario": "save-no-duplicate",
+          "step": 1,
+          "assertion": 1,
+          "check": "value",
+          "target": "#name",
+          "equals": "Ada"
+        },
+        {
+          "scenario": "save-no-duplicate",
+          "step": 2,
+          "assertion": 1,
+          "check": "text",
+          "target": "#status",
+          "equals": "Saved"
+        },
+        {
+          "scenario": "save-no-duplicate",
+          "step": 2,
+          "assertion": 2,
+          "check": "request_count",
+          "target": "**/api/save",
+          "equals": 1
+        },
+        {
+          "scenario": "save-no-duplicate",
+          "step": 2,
+          "assertion": 3,
+          "check": "enabled",
+          "target": "#save"
+        }
+      ]
+    },
+    {
+      "id": "task-http-error-retry",
+      "actor": "Fixture test user",
+      "goal": "Recover after HTTP 503",
+      "completion_condition": "All explicitly required interaction assertions pass",
+      "required_scenarios": [
+        "http-error-retry"
+      ],
+      "required_assertions": [
+        {
+          "scenario": "http-error-retry",
+          "step": 1,
+          "assertion": 1,
+          "check": "value",
+          "target": "#name",
+          "equals": "Ada"
+        },
+        {
+          "scenario": "http-error-retry",
+          "step": 2,
+          "assertion": 1,
+          "check": "text",
+          "target": "#status",
+          "equals": "Could not save. Retry available"
+        },
+        {
+          "scenario": "http-error-retry",
+          "step": 2,
+          "assertion": 2,
+          "check": "enabled",
+          "target": "#save"
+        },
+        {
+          "scenario": "http-error-retry",
+          "step": 2,
+          "assertion": 3,
+          "check": "request_count",
+          "target": "**/api/save",
+          "equals": 1
+        }
+      ]
+    },
+    {
+      "id": "task-network-abort-retry",
+      "actor": "Fixture test user",
+      "goal": "Recover after network failure",
+      "completion_condition": "All explicitly required interaction assertions pass",
+      "required_scenarios": [
+        "network-abort-retry"
+      ],
+      "required_assertions": [
+        {
+          "scenario": "network-abort-retry",
+          "step": 1,
+          "assertion": 1,
+          "check": "value",
+          "target": "#name",
+          "equals": "Ada"
+        },
+        {
+          "scenario": "network-abort-retry",
+          "step": 2,
+          "assertion": 1,
+          "check": "text",
+          "target": "#status",
+          "equals": "Could not save. Retry available"
+        },
+        {
+          "scenario": "network-abort-retry",
+          "step": 2,
+          "assertion": 2,
+          "check": "enabled",
+          "target": "#save"
+        }
+      ]
+    }
+  ]
+}

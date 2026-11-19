@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "id": "save-state-and-duplicate-request",
+  "target": "../../tests/fixtures/interaction/network.html",
+  "timeout_ms": 5000,
+  "scenarios": [
+    {
+      "id": "initial-and-success",
+      "routes": [{"url":"https://example.test/api/save","mode":"fulfill","status":200,"body":"{}","delay_ms":250}],
+      "steps": [
+        {"action":"assert_only","state":"idle","expect":[{"check":"text","selector":"#status","equals":"Idle"},{"check":"enabled","selector":"#save"}]},
+        {"action":"double_click","selector":"#save","state":"pending","expect":[{"check":"text","selector":"#status","equals":"Saved"},{"check":"request_count","url":"https://example.test/api/save","equals":1,"settle_ms":400},{"check":"enabled","selector":"#save"}]}
+      ]
+    },
+    {
+      "id": "server-error-recovery",
+      "routes": [{"url":"https://example.test/api/save","mode":"fulfill","status":503,"body":"unavailable"}],
+      "steps": [
+        {"action":"click","selector":"#save","state":"error","expect":[{"check":"text","selector":"#status","equals":"Save failed — retry"},{"check":"enabled","selector":"#save"}]}
+      ]
+    }
+  ]
+}

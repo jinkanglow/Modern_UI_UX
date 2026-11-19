@@ -1,0 +1,8 @@
+{
+  "min_cases": 20,
+  "min_real_project_cases": 10,
+  "min_independent_double_cases": 10,
+  "min_positive_annotations": 20,
+  "min_negative_cases": 5,
+  "min_technologies": 2
+}

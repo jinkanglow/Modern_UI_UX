@@ -1,0 +1,61 @@
+{
+  "schema_version": "3.9",
+  "contract_id": "framework-cross-component-save",
+  "flows": [
+    {
+      "id": "save-feedback",
+      "scenario": "validation-blocks-empty-name",
+      "kind": "ordinary",
+      "states": [
+        "idle",
+        "validating",
+        "pending",
+        "success"
+      ],
+      "required_evidence": [
+        {
+          "id": "validation",
+          "kind": "dom_assertion",
+          "purpose": "state"
+        },
+        {
+          "id": "pending",
+          "kind": "dom_assertion",
+          "purpose": "state"
+        },
+        {
+          "id": "success",
+          "kind": "dom_assertion",
+          "purpose": "state"
+        }
+      ]
+    },
+    {
+      "id": "agent-approval",
+      "scenario": "validation-blocks-empty-name",
+      "kind": "agent_action",
+      "states": [
+        "idle",
+        "pending",
+        "success"
+      ],
+      "required_evidence": [
+        {
+          "id": "user-consent",
+          "kind": "human_review",
+          "purpose": "authorization"
+        },
+        {
+          "id": "progress",
+          "kind": "dom_assertion",
+          "purpose": "state"
+        },
+        {
+          "id": "result",
+          "kind": "network_observation",
+          "purpose": "outcome"
+        }
+      ]
+    }
+  ]
+}

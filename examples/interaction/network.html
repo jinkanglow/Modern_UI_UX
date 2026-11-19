@@ -1,0 +1,15 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Network interaction fixture</title>
+<label for="name">Name</label><input id="name" value="Ada">
+<button id="save">Save</button><output id="status" role="status">Ready</output>
+<script>
+const save=document.querySelector('#save'),status=document.querySelector('#status');
+save.addEventListener('click',async()=>{
+ if(save.disabled)return;
+ save.disabled=true;status.textContent='Saving';
+ try{const response=await fetch('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:document.querySelector('#name').value})});
+ if(!response.ok)throw new Error('HTTP '+response.status);
+ status.textContent='Saved';}
+ catch{status.textContent='Could not save. Retry available';}
+ finally{save.disabled=false;}
+});
+</script></html>

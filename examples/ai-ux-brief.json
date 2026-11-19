@@ -1,0 +1,20 @@
+{
+  "primary_actor": "Operations analyst",
+  "user_goal": "Decide which anomaly needs attention and why",
+  "primary_scenario": "Review one flagged anomaly, inspect supporting evidence, then accept, edit, or dismiss the recommendation",
+  "non_goals": ["Autonomous remediation", "Hiding low-confidence results"],
+  "ai_policy": {
+    "may_suggest": true,
+    "may_execute": false,
+    "requires_authorization_for": ["external_side_effect", "data_sharing"],
+    "must_show": ["uncertainty", "source_or_provenance", "last_updated_at"],
+    "must_support": ["edit", "reject", "retry", "report_wrong"]
+  },
+  "completion_condition": "The analyst has recorded an explicit decision and the UI shows its saved status",
+  "failure_conditions": ["stale_data", "model_error", "network_timeout", "insufficient_evidence"],
+  "verification": {
+    "required_states": ["idle", "loading", "result", "uncertain", "error", "saved"],
+    "requires_browser_evidence": true,
+    "requires_backend_receipt": true
+  }
+}

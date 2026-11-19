@@ -1,0 +1,21 @@
+{
+  "schema_version": "0.7",
+  "id": "sample-form",
+  "target": "form.html",
+  "timeout_ms": 3000,
+  "scenarios": [
+    {
+      "id": "missing-name-error",
+      "steps": [
+        {"action": "click", "selector": "#submit", "state": "error", "expect": [{"check": "text", "selector": "#status", "equals": "Name required"}]}
+      ]
+    },
+    {
+      "id": "valid-name-success",
+      "steps": [
+        {"action": "fill", "selector": "#name", "state": "idle", "value": "Ada", "expect": [{"check": "value", "selector": "#name", "equals": "Ada"}]},
+        {"action": "click", "selector": "#submit", "state": "pending", "expect": [{"check": "text", "selector": "#status", "equals": "Saved: Ada"}, {"check": "enabled", "selector": "#submit"}]}
+      ]
+    }
+  ]
+}

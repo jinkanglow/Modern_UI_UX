@@ -1,0 +1,29 @@
+{
+  "schema_version": "2.2",
+  "id": "network-form-tasks-v22",
+  "contract_id": "async-save-contract",
+  "tasks": [
+    {
+      "id": "submit-once",
+      "actor": "Test user",
+      "goal": "Save without duplicate requests",
+      "completion_condition": "Visible success and exactly one matching request",
+      "required_scenarios": ["successful-save-no-duplicate"],
+      "required_assertions": [
+        {"scenario":"successful-save-no-duplicate","step":1,"assertion":1,"check":"text","target":"#status","equals":"Saved"},
+        {"scenario":"successful-save-no-duplicate","step":1,"assertion":2,"check":"request_count","target":"**/api/save","equals":1}
+      ]
+    },
+    {
+      "id": "recover-from-errors",
+      "actor": "Test user",
+      "goal": "Recover from server and network errors",
+      "completion_condition": "Both error modes expose retry opportunity",
+      "required_scenarios": ["server-error-recovery","network-failure-recovery"],
+      "required_assertions": [
+        {"scenario":"server-error-recovery","step":1,"assertion":2,"check":"enabled","target":"#save"},
+        {"scenario":"network-failure-recovery","step":1,"assertion":2,"check":"enabled","target":"#save"}
+      ]
+    }
+  ]
+}

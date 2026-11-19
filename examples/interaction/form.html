@@ -1,0 +1,13 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Interaction contract example</title></head><body>
+<label for="name">Name</label><input id="name" name="name" />
+<button id="submit" type="button">Submit</button><p id="status" role="status">Idle</p>
+<script>
+const submit=document.querySelector('#submit');
+submit.addEventListener('click',async()=>{
+  const name=document.querySelector('#name').value.trim();
+  if(!name){document.querySelector('#status').textContent='Name required';return;}
+  submit.disabled=true;document.querySelector('#status').textContent='Pending';
+  await new Promise(resolve=>setTimeout(resolve,120));
+  document.querySelector('#status').textContent=`Saved: ${name}`;submit.disabled=false;
+});
+</script></body></html>

@@ -1,0 +1,53 @@
+{
+  "schema_version": "4.0",
+  "contract_id": "framework-cross-component-save",
+  "flows": [
+    {
+      "id": "save",
+      "state_bindings": [
+        {
+          "state": "idle",
+          "assertion": {
+            "scenario": "save-no-duplicate",
+            "step": 1,
+            "check_index": 0
+          }
+        },
+        {
+          "state": "pending",
+          "assertion": {
+            "scenario": "save-no-duplicate",
+            "step": 2,
+            "check_index": 0
+          }
+        },
+        {
+          "state": "success",
+          "assertion": {
+            "scenario": "save-no-duplicate",
+            "step": 2,
+            "check_index": 2
+          }
+        }
+      ],
+      "evidence_bindings": [
+        {
+          "id": "input",
+          "assertion": {
+            "scenario": "save-no-duplicate",
+            "step": 1,
+            "check_index": 0
+          }
+        },
+        {
+          "id": "request",
+          "assertion": {
+            "scenario": "save-no-duplicate",
+            "step": 2,
+            "check_index": 1
+          }
+        }
+      ]
+    }
+  ]
+}

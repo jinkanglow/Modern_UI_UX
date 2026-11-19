@@ -1,0 +1,21 @@
+{
+  "schema_version": "2.1",
+  "id": "network-form-tasks",
+  "contract_id": "async-save-contract",
+  "tasks": [
+    {
+      "id": "submit-once",
+      "actor": "Test user",
+      "goal": "Submit the form without duplicate requests",
+      "completion_condition": "The UI confirms submission and the browser sends exactly one matching request",
+      "required_scenarios": ["successful-save-no-duplicate"]
+    },
+    {
+      "id": "recover-from-errors",
+      "actor": "Test user",
+      "goal": "Receive actionable feedback when the network fails",
+      "completion_condition": "Both server-error and aborted-request scenarios display recoverable error states",
+      "required_scenarios": ["server-error-recovery", "network-failure-recovery"]
+    }
+  ]
+}

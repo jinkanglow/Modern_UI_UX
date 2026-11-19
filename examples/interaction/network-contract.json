@@ -1,0 +1,106 @@
+{
+  "schema_version": "0.8",
+  "id": "async-save-contract",
+  "target": "http://127.0.0.1:3000/network.html",
+  "timeout_ms": 4000,
+  "scenarios": [
+    {
+      "id": "successful-save-no-duplicate",
+      "steps": [
+        {
+          "action": "double_click",
+          "selector": "#save",
+          "state": "pending",
+          "expect": [
+            {
+              "check": "text",
+              "selector": "#status",
+              "equals": "Saved"
+            },
+            {
+              "check": "request_count",
+              "url": "**/api/save",
+              "equals": 1,
+              "settle_ms": 350
+            },
+            {
+              "check": "enabled",
+              "selector": "#save"
+            }
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "url": "**/api/save",
+          "mode": "fulfill",
+          "status": 200,
+          "body": "{}",
+          "delay_ms": 250
+        }
+      ]
+    },
+    {
+      "id": "server-error-recovery",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#save",
+          "state": "error",
+          "expect": [
+            {
+              "check": "text",
+              "selector": "#status",
+              "equals": "Could not save. Retry available"
+            },
+            {
+              "check": "enabled",
+              "selector": "#save"
+            },
+            {
+              "check": "request_count",
+              "url": "**/api/save",
+              "equals": 1,
+              "settle_ms": 350
+            }
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "url": "**/api/save",
+          "mode": "fulfill",
+          "status": 503,
+          "body": "unavailable"
+        }
+      ]
+    },
+    {
+      "id": "network-failure-recovery",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#save",
+          "state": "error",
+          "expect": [
+            {
+              "check": "text",
+              "selector": "#status",
+              "equals": "Could not save. Retry available"
+            },
+            {
+              "check": "enabled",
+              "selector": "#save"
+            }
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "url": "**/api/save",
+          "mode": "abort"
+        }
+      ]
+    }
+  ]
+}

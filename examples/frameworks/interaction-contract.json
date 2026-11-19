@@ -1,0 +1,161 @@
+{
+  "schema_version": "1.0",
+  "id": "framework-cross-component-save",
+  "target": "http://127.0.0.1:3000/",
+  "timeout_ms": 6000,
+  "scenarios": [
+    {
+      "id": "validation-blocks-empty-name",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#save",
+          "expect": [
+            {
+              "check": "text",
+              "selector": "#status",
+              "equals": "Name required"
+            },
+            {
+              "check": "request_count",
+              "url": "**/api/save",
+              "equals": 0,
+              "settle_ms": 300
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "save-no-duplicate",
+      "routes": [
+        {
+          "url": "**/api/save",
+          "mode": "fulfill",
+          "status": 200,
+          "body": "{}",
+          "delay_ms": 300
+        }
+      ],
+      "steps": [
+        {
+          "action": "fill",
+          "selector": "#name",
+          "value": "Ada",
+          "expect": [
+            {
+              "check": "value",
+              "selector": "#name",
+              "equals": "Ada"
+            }
+          ]
+        },
+        {
+          "action": "double_click",
+          "selector": "#save",
+          "expect": [
+            {
+              "check": "text",
+              "selector": "#status",
+              "equals": "Saved"
+            },
+            {
+              "check": "request_count",
+              "url": "**/api/save",
+              "equals": 1,
+              "settle_ms": 450
+            },
+            {
+              "check": "enabled",
+              "selector": "#save"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "http-error-retry",
+      "routes": [
+        {
+          "url": "**/api/save",
+          "mode": "fulfill",
+          "status": 503,
+          "body": "unavailable"
+        }
+      ],
+      "steps": [
+        {
+          "action": "fill",
+          "selector": "#name",
+          "value": "Ada",
+          "expect": [
+            {
+              "check": "value",
+              "selector": "#name",
+              "equals": "Ada"
+            }
+          ]
+        },
+        {
+          "action": "click",
+          "selector": "#save",
+          "expect": [
+            {
+              "check": "text",
+              "selector": "#status",
+              "equals": "Could not save. Retry available"
+            },
+            {
+              "check": "enabled",
+              "selector": "#save"
+            },
+            {
+              "check": "request_count",
+              "url": "**/api/save",
+              "equals": 1,
+              "settle_ms": 250
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "network-abort-retry",
+      "routes": [
+        {
+          "url": "**/api/save",
+          "mode": "abort"
+        }
+      ],
+      "steps": [
+        {
+          "action": "fill",
+          "selector": "#name",
+          "value": "Ada",
+          "expect": [
+            {
+              "check": "value",
+              "selector": "#name",
+              "equals": "Ada"
+            }
+          ]
+        },
+        {
+          "action": "click",
+          "selector": "#save",
+          "expect": [
+            {
+              "check": "text",
+              "selector": "#status",
+              "equals": "Could not save. Retry available"
+            },
+            {
+              "check": "enabled",
+              "selector": "#save"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

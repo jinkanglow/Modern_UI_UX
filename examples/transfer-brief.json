@@ -1,0 +1,12 @@
+{
+  "primary_actor": "Account holder",
+  "primary_task": "Transfer money to a chosen payee",
+  "completion_condition": "Confirmed transaction status is available",
+  "business_objective": "Enable authorized transfers with recoverable errors",
+  "risks": [
+    {
+      "impact": "duplicate transfer",
+      "reversibility": "limited"
+    }
+  ]
+}

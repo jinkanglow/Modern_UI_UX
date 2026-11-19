@@ -1,0 +1,28 @@
+{
+  "schema_version": "3.9",
+  "contract_id": "framework-cross-component-save",
+  "flows": [
+    {
+      "id": "save",
+      "scenario": "save-no-duplicate",
+      "kind": "ordinary",
+      "states": [
+        "idle",
+        "pending",
+        "success"
+      ],
+      "required_evidence": [
+        {
+          "id": "input",
+          "kind": "dom_assertion",
+          "purpose": "state"
+        },
+        {
+          "id": "request",
+          "kind": "network_observation",
+          "purpose": "outcome"
+        }
+      ]
+    }
+  ]
+}
