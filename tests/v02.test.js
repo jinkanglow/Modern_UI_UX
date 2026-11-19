@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {audit} from '../src/audit.js';
+import {plan} from '../src/plan.js';
+import {sarif} from '../src/sarif.js';
+const temp=()=>fs.mkdtempSync(path.join(os.tmpdir(),'uiux-v02-'));
+test('candidate findings are not presented as verified failures',()=>{const d=temp();try{fs.writeFileSync(path.join(d,'a.html'),'<img src="x">');const r=audit(d);assert.equal(r.findings.find(f=>f.rule_id==='HTML-001').status,'FAIL');assert.equal(r.schema_version,'0.6');assert.equal(sarif(r).runs[0].results[0].ruleId,'HTML-001');}finally{fs.rmSync(d,{recursive:true,force:true});}});
+test('custom exclude directories and file size limit',()=>{const d=temp();try{fs.mkdirSync(path.join(d,'generated'));fs.writeFileSync(path.join(d,'generated','a.html'),'<img src="x">');fs.writeFileSync(path.join(d,'b.html'),'<img src="x">');fs.writeFileSync(path.join(d,'uiux.config.json'),JSON.stringify({audit:{exclude:['generated'],max_file_bytes:1024,fail_on:'none'}}));const r=audit(d);assert.equal(r.scanned_files,1);assert.equal(r.configuration.fail_on,'none');}finally{fs.rmSync(d,{recursive:true,force:true});}});
+test('task contract does not invent missing information',()=>{const d=temp();try{const f=path.join(d,'brief.json');fs.writeFileSync(f,JSON.stringify({primary_task:'Checkout'}));const r=plan(f);assert.equal(r.status,'NEEDS_INPUT');assert.ok(r.missing_fields.includes('primary_actor'));assert.equal(r.verification.status,'NOT_RUN');}finally{fs.rmSync(d,{recursive:true,force:true});}});
+test('complete task contract is specified, not verified',()=>{const r=plan('examples/transfer-brief.json');assert.equal(r.status,'SPECIFIED');assert.equal(r.state_model.verified,false);});

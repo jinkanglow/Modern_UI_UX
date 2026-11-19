@@ -1,0 +1,7 @@
+{
+  "description": "Curated syntax fixtures, not a representative population of real projects",
+  "cases": [
+    { "file": "positive.ts", "expected": ["JS-001", "JS-002", "JS-003", "JS-005"] },
+    { "file": "negative.ts", "expected": [] }
+  ]
+}

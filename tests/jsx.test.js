@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {analyzeJsx,loadTypeScript} from '../src/jsx-analysis.js';
+import {audit} from '../src/audit.js';
+import fs from 'node:fs';import os from 'node:os';import path from 'node:path';
+const ids=s=>analyzeJsx(s,'example.tsx').findings.map(x=>x.id);
+test('typescript parser is installed for development environment',()=>assert.ok(loadTypeScript()));
+test('JSX AST ignores comments and JSX text mimicking tags',()=>{assert.ok(!ids('/* <img src="x"/> */ const A=()=> <div>{"<img src=x>"}</div>').includes('HTML-001'));});
+test('JSX AST catches image missing alt with source column',()=>{const f=analyzeJsx('const A=()=> <img src="x"/>','x.tsx').findings.find(x=>x.id==='HTML-001');assert.equal(f.verified,true);assert.equal(f.line,1);assert.ok(f.column>0);});
+test('JSX spread image remains unverified',()=>{const f=analyzeJsx('const A=()=> <img {...props}/>','x.tsx').findings.find(x=>x.id==='HTML-001');assert.equal(f.verified,false);});
+test('JSX for/id and wrapping labels recognized',()=>{const s='const A=()=> <><label htmlFor="email">Email</label><input id="email"/><label>Age<input/></label></>';assert.ok(!ids(s).includes('HTML-004'));});
+test('JSX catches nested native controls and positive tabIndex',()=>{const s='const A=()=> <button tabIndex={2}><a href="/">Go</a></button>';const result=ids(s);assert.ok(result.includes('HTML-011'));assert.ok(result.includes('HTML-009'));});
+test('JSX dynamic content is unverified, not confirmed empty',()=>{const f=analyzeJsx('const A=()=> <button>{name}</button>','x.tsx').findings.find(x=>x.id==='HTML-003');assert.equal(f.verified,false);});
+test('audit reports JSX AST provenance',()=>{const dir=fs.mkdtempSync(path.join(os.tmpdir(),'uiux-jsx-'));try{fs.writeFileSync(path.join(dir,'a.tsx'),'export default ()=> <img src="x"/>');const report=audit(dir);assert.ok(report.findings.some(x=>x.rule_id==='HTML-001'&&x.verification_method==='typescript-jsx-ast'&&x.status==='FAIL'));}finally{fs.rmSync(dir,{recursive:true,force:true});}});

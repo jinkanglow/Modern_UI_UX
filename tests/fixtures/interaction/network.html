@@ -1,0 +1,13 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Network UX fixture</title></head><body>
+<label for="name">Name</label><input id="name" value="Ada">
+<button id="save" type="button">Save</button><output id="status" role="status">Idle</output>
+<script>
+const button=document.querySelector('#save'), status=document.querySelector('#status');
+button.addEventListener('click',async()=>{
+ if(button.disabled)return;
+ button.disabled=true;status.textContent='Saving…';
+ try{const res=await fetch('https://example.test/api/save',{method:'POST',body:JSON.stringify({name:document.querySelector('#name').value})});if(!res.ok)throw Error('HTTP '+res.status);status.textContent='Saved';}
+ catch{status.textContent='Save failed — retry';}
+ finally{button.disabled=false;}
+});
+</script></body></html>

@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.2",
+  "description": "Synthetic, single-reviewed reproducibility demonstration; NOT a real-project evaluation",
+  "cases": [
+    {
+      "id": "synthetic-01",
+      "file": "broken.html",
+      "technology": "html",
+      "origin": "synthetic",
+      "sha256": "4b3a5f89ea71b2451bbc8828a3fe8035f1bc0c2d5fd65ea6b321fb9918ba5b9c",
+      "review": {
+        "method": "single",
+        "reviewers": [
+          "fixture-author"
+        ],
+        "guideline_version": "1.2-demo"
+      },
+      "annotations": [
+        {
+          "rule_id": "HTML-001",
+          "line": 4,
+          "status": "FAIL"
+        },
+        {
+          "rule_id": "HTML-004",
+          "line": 7,
+          "status": "FAIL"
+        }
+      ]
+    },
+    {
+      "id": "synthetic-02",
+      "file": "valid.html",
+      "technology": "html",
+      "origin": "synthetic",
+      "sha256": "a5cf007a922e0c5cdf18c479b2b81f5f696865cc7094548ff9adc1595ad94799",
+      "review": {
+        "method": "single",
+        "reviewers": [
+          "fixture-author"
+        ],
+        "guideline_version": "1.2-demo"
+      },
+      "annotations": []
+    },
+    {
+      "id": "synthetic-03",
+      "file": "uncertain.html",
+      "technology": "html",
+      "origin": "synthetic",
+      "sha256": "5240d2ed205b8e73697395f290580848b1375a974238e2aa23e4d982212ba4f9",
+      "review": {
+        "method": "single",
+        "reviewers": [
+          "fixture-author"
+        ],
+        "guideline_version": "1.2-demo"
+      },
+      "annotations": [
+        {
+          "rule_id": "HTML-004",
+          "line": 3,
+          "status": "FAIL"
+        },
+        {
+          "rule_id": "HTML-014",
+          "line": 3,
+          "status": "UNVERIFIED"
+        }
+      ]
+    }
+  ]
+}

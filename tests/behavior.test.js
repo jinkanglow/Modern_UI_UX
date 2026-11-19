@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {analyzeBehavior} from '../src/behavior-analysis.js';
+import {audit} from '../src/audit.js';
+const ids=s=>analyzeBehavior(s,'example.ts').findings.map(f=>f.id);
+test('behavior AST ignores comments and string literals',()=>assert.deepEqual(ids(`// alert('x')\nconst a="document.write('x')";`),[]));
+test('behavior AST catches actual browser dialog call sites',()=>assert.deepEqual(ids(`window.alert('x'); confirm('y'); globalThis.prompt('z');`),['JS-001','JS-002','JS-003']));
+test('behavior AST does not flag arbitrary object methods',()=>assert.deepEqual(ids(`foo.alert(); foo.confirm(); foo.prompt(); foo.write();`),[]));
+test('behavior AST catches document.write with source location',()=>{const f=analyzeBehavior(`const x=1;\n document.write('x');`,'x.js').findings[0];assert.equal(f.id,'JS-005');assert.equal(f.line,2);assert.equal(f.column,2);assert.equal(f.verified,false);});
+test('behavior AST applies to JSX without double reporting',()=>{const dir=fs.mkdtempSync(path.join(os.tmpdir(),'uiux-behavior-'));try{fs.writeFileSync(path.join(dir,'a.tsx'),`export default function App(){window.alert('x');return <img src="x"/>}`);const r=audit(dir);assert.equal(r.findings.filter(f=>f.rule_id==='JS-001').length,1);assert.ok(r.findings.some(f=>f.rule_id==='HTML-001'&&f.status==='FAIL'));}finally{fs.rmSync(dir,{recursive:true,force:true});}});

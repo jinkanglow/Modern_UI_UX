@@ -1,0 +1,16 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {contractFingerprint} from '../src/interaction.js';
+import {assuranceReport} from '../src/assurance.js';
+const contract=JSON.parse(fs.readFileSync('examples/frameworks/interaction-contract.json'));
+const tasks=JSON.parse(fs.readFileSync('examples/frameworks/tasks.json'));
+const good=()=>({mode:'interaction',contract_id:contract.id,contract_sha256:contractFingerprint(contract),scenarios:contract.scenarios.map(s=>({id:s.id,status:'PASS',steps:s.steps.map((step,i)=>({index:i+1,action:step.action,status:'PASS',checks:step.expect.map(c=>({check:c.check,status:'PASS'}))}))})),findings:[],artifacts:[],counts:{scenarios:contract.scenarios.length,passed:contract.scenarios.length,failed:0}});
+const reject=(mutate)=>{const r=good();mutate(r);assert.throws(()=>assuranceReport({contract,tasks,interaction:r}),/integrity failure/);};
+test('consistent report accepted',()=>assert.equal(assuranceReport({contract,tasks,interaction:good()}).gate.status,'CONTRACT_PASS'));
+test('reject forged zero failures count',()=>reject(r=>{r.scenarios[0].status='FAIL';r.scenarios[0].steps[0].status='FAIL';r.scenarios[0].steps[0].checks[0].status='FAIL';}));
+test('reject duplicate scenario',()=>reject(r=>{r.scenarios[1]=structuredClone(r.scenarios[0]);}));
+test('reject contradictory step failure',()=>reject(r=>{r.scenarios[0].steps[0].status='FAIL';r.scenarios[0].status='FAIL';r.counts.failed=1;r.counts.passed--;}));
+test('reject truncated passing scenario',()=>reject(r=>r.scenarios[0].steps.pop()));
+test('reject wrong assertion check',()=>reject(r=>r.scenarios[0].steps[0].checks[0].check='made-up'));
+test('reject extra steps after failed action',()=>reject(r=>{const s=r.scenarios.find(s=>s.steps.length>1);s.steps[0].status='FAIL';s.steps[0].checks[0].status='FAIL';s.status='FAIL';r.counts.failed++;r.counts.passed--;}));

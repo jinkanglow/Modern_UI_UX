@@ -1,0 +1,16 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {verifyCiBundle,verifyCiBundleDirectory} from '../src/ci-bundle.js';
+const receipt=framework=>({schema_version:'3.0',kind:'CI_EXECUTION_RECEIPT',framework,attestation:'NOT_ATTESTED',execution_status:'IN_PROCESS_OBSERVED_NOT_ATTESTED',gate:'CONTRACT_PASS',task_counts:{verified:4,failed:0,not_verified:0},contract_id:'contract',manifest_id:'tasks',contract_sha256:'a'.repeat(64),assurance_sha256:'b'.repeat(64),run_id:'123',revision:'f'.repeat(40)});
+const pair=()=>({react:receipt('react'),vue:receipt('vue')});
+test('two matching framework receipts pass structural bundle checks',()=>{const x=verifyCiBundle(pair(),{expectedRunId:'123',expectedRevision:'f'.repeat(40)});assert.equal(x.status,'CONTRACT_PASS');assert.equal(x.attestation,'NOT_ATTESTED');});
+test('missing framework fails closed',()=>assert.deepEqual(verifyCiBundle({react:receipt('react')}).errors,['vue:MISSING_RECEIPT']));
+test('a failed gate cannot pass bundle',()=>{const p=pair();p.vue.gate='BLOCK';assert.match(verifyCiBundle(p).errors.join(','),/GATE_NOT_PASSED/);});
+test('reject mismatched contracts across frameworks',()=>{const p=pair();p.vue.contract_sha256='c'.repeat(64);assert.match(verifyCiBundle(p).errors.join(','),/CROSS_FRAMEWORK_CONTRACT_SHA256_MISMATCH/);});
+test('reject wrong run and revision',()=>{const p=pair();p.vue.run_id='999';const e=verifyCiBundle(p,{expectedRunId:'123'}).errors.join(',');assert.match(e,/RUN_ID_MISMATCH/);assert.match(e,/CROSS_FRAMEWORK_RUN_MISMATCH/);});
+test('reject fake attestation and unsupported execution',()=>{const p=pair();p.react.attestation='VERIFIED';p.react.execution_status='REPORT_SUPPLIED_UNAUTHENTICATED';assert.match(verifyCiBundle(p).errors.join(','),/UNSUPPORTED_PROVENANCE/);});
+test('reject zero tasks and malformed digest',()=>{const p=pair();p.vue.task_counts.verified=0;p.vue.assurance_sha256='bad';assert.match(verifyCiBundle(p).errors.join(','),/INVALID_TASK_COUNTS/);assert.match(verifyCiBundle(p).errors.join(','),/INVALID_DIGEST/);});
+test('directory verifier does not expose raw malformed contents',()=>{const dir=fs.mkdtempSync(path.join(os.tmpdir(),'uiux-ci-'));try{fs.writeFileSync(path.join(dir,'react.json'),'SECRET: malformed');const result=verifyCiBundleDirectory(dir);assert.equal(result.status,'BLOCK');assert.ok(!JSON.stringify(result).includes('SECRET'));}finally{fs.rmSync(dir,{recursive:true,force:true});}});

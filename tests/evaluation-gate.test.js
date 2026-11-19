@@ -1,0 +1,17 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {spawnSync} from 'node:child_process';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {evaluate} from '../src/evaluate.js';
+import {evaluationGate} from '../src/evaluation-gate.js';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const fixture=path.join(root,'tests/fixtures/evaluation-v12/manifest.json');
+const report=evaluate(fixture);
+const empty={min_cases:0,min_real_project_cases:0,min_independent_double_cases:0,min_positive_annotations:0,min_negative_cases:0,min_technologies:0};
+test('synthetic single-review fixtures cannot pass real-project and independent-review requirements',()=>{const result=evaluationGate(report,{...empty,min_real_project_cases:1,min_independent_double_cases:1});assert.equal(result.status,'INSUFFICIENT_EVIDENCE');assert.equal(result.observed.real_project_cases,0);assert.equal(result.observed.independent_double_cases,0);});
+test('counts actual positives, negative cases, and technology breadth',()=>{const r=evaluationGate(report,empty);assert.equal(r.observed.positive_annotations,3);assert.equal(r.observed.negative_cases,1);assert.equal(r.observed.technologies,1);assert.equal(r.accuracy_gate,'NOT_EVALUATED');});
+test('adequate composition does not claim detector accuracy',()=>{const r=evaluationGate(report,{...empty,min_cases:3,min_positive_annotations:3});assert.equal(r.status,'ADEQUATE_FOR_POLICY');assert.equal(r.accuracy_gate,'NOT_EVALUATED');});
+test('rejects incomplete, invalid, or unknown policy fields',()=>{for(const p of [{...empty,min_cases:-1},{...empty,min_cases:1.5},{...empty,unknown:2},{min_cases:1},null])assert.throws(()=>evaluationGate(report,p),/policy/i);});
+test('rejects legacy evaluations without provenance',()=>{assert.throws(()=>evaluationGate({...report,schema_version:'1.1'},empty),/v1.2/);});
+test('CLI fails closed on insufficient evidence and writes structured report',()=>{const p=spawnSync(process.execPath,['src/cli.js','evaluation-gate','tests/fixtures/evaluation-v12/manifest.json','--policy','examples/evaluation/minimum-policy.json'],{cwd:root,encoding:'utf8'});assert.equal(p.status,1);assert.equal(JSON.parse(p.stdout).status,'INSUFFICIENT_EVIDENCE');});

@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {validateContract,verifyInteraction} from '../src/interaction.js';
+const contract={schema_version:'0.8',id:'network',target:'http://localhost',routes:[{url:'**/api/save',mode:'abort'}],scenarios:[{id:'failure',steps:[{action:'click',selector:'#submit',state:'error',expect:[{check:'request_count',url:'http://localhost/api/save',equals:1}]}]}]};
+test('v0.8 network contract is accepted',()=>assert.deepEqual(validateContract(contract),[]));
+test('rejects unsafe/unbounded route data',()=>{const c=structuredClone(contract);c.routes=[{url:'**/*',mode:'eval'}];assert.match(validateContract(c).join(' '),/routes/);});
+test('rejects malformed request count',()=>{const c=structuredClone(contract);c.scenarios[0].steps[0].expect[0].equals=-1;assert.match(validateContract(c).join(' '),/nonnegative/);});
+test('rejects missing request URL',()=>{const c=structuredClone(contract);delete c.scenarios[0].steps[0].expect[0].url;assert.match(validateContract(c).join(' '),/selector\/url/);});
+test('scenario routes override top-level routes and reach adapter',async()=>{const c=structuredClone(contract);c.scenarios[0].routes=[{url:'**/api/save',mode:'fulfill',body:'{}'}];let seen;const a={async open(t,opts){seen=opts.routes;},async perform(){},async assert(){},async close(){}};const r=await verifyInteraction(c,a);assert.equal(r.counts.passed,1);assert.equal(seen[0].mode,'fulfill');});
+test('network assertion failure retains URL evidence',async()=>{const a={async open(){},async perform(){},async assert(){throw Error('request count 0');},async close(){}};const r=await verifyInteraction(contract,a);assert.equal(r.counts.failed,1);assert.equal(r.findings[0].selector,'http://localhost/api/save');});
+test('network fixture validates',async()=>{const {readContract}=await import('../src/interaction.js');const c=readContract('examples/interaction/network-contract.json');assert.deepEqual(validateContract(c),[]);});

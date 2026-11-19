@@ -1,0 +1,20 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {addSnapshot,checkSnapshots} from '../src/dataset.js';
+const meta={id:'case-01',technology:'react',repository:'https://github.com/example/example',revision:'a'.repeat(40),sourcePath:'src/App.tsx'};
+function withDir(fn){const dir=fs.mkdtempSync(path.join(os.tmpdir(),'uiux-data-'));try{const src=path.join(dir,'App.tsx');fs.writeFileSync(src,'export const App = () => <button>Go</button>;\n');return fn(dir,src);}finally{fs.rmSync(dir,{recursive:true,force:true});}}
+test('imported real-project snapshot is frozen and explicitly pending review',()=>withDir((dir,src)=>{const dataset=path.join(dir,'dataset');const r=addSnapshot({...meta,dataset,source:src});assert.equal(r.review_status,'PENDING');const result=checkSnapshots(dataset);assert.deepEqual(result.counts,{total:1,intact:1,pending_review:1});assert.equal(result.benchmark_ready,false);assert.equal(JSON.parse(fs.readFileSync(path.join(dataset,'manifest.json'))).cases[0].annotations.length,0);}));
+test('tampering with imported snapshot is detected',()=>withDir((dir,src)=>{const dataset=path.join(dir,'dataset');const r=addSnapshot({...meta,dataset,source:src});fs.appendFileSync(path.join(dataset,r.file),'// changed');assert.equal(checkSnapshots(dataset).cases[0].integrity,'FAIL');}));
+test('duplicate case IDs are rejected',()=>withDir((dir,src)=>{const dataset=path.join(dir,'dataset');addSnapshot({...meta,dataset,source:src});assert.throws(()=>addSnapshot({...meta,dataset,source:src}),/Duplicate/);}));
+test('traversal in source provenance is rejected',()=>withDir((dir,src)=>assert.throws(()=>addSnapshot({...meta,dataset:path.join(dir,'data'),source:src,sourcePath:'../secret.tsx'}),/Invalid source path/)));
+test('non-hex revision is rejected',()=>withDir((dir,src)=>assert.throws(()=>addSnapshot({...meta,dataset:path.join(dir,'data'),source:src,revision:'main'}),/pinned hexadecimal/)));
+test('symlink sources are rejected',()=>withDir((dir,src)=>{const link=path.join(dir,'link.tsx');fs.symlinkSync(src,link);assert.throws(()=>addSnapshot({...meta,dataset:path.join(dir,'data'),source:link}),/symlink/);}));
+test('snapshot traversal in tampered manifest is rejected',()=>withDir((dir,src)=>{const dataset=path.join(dir,'data');addSnapshot({...meta,dataset,source:src});const file=path.join(dataset,'manifest.json');const m=JSON.parse(fs.readFileSync(file));m.cases[0].file='../App.tsx';fs.writeFileSync(file,JSON.stringify(m));assert.throws(()=>checkSnapshots(dataset),/escapes dataset/);}));
+import {spawnSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+const cli=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../src/cli.js');
+test('CLI dataset add and check work together',()=>withDir((dir,src)=>{const dataset=path.join(dir,'dataset');const args=['dataset','add',dataset,'--source',src,'--id','case-cli','--technology','react','--repository',meta.repository,'--revision',meta.revision,'--source-path',meta.sourcePath];const added=spawnSync(process.execPath,[cli,...args],{encoding:'utf8'});assert.equal(added.status,0,added.stderr);const checked=spawnSync(process.execPath,[cli,'dataset','check',dataset],{encoding:'utf8'});assert.equal(checked.status,0,checked.stderr);assert.equal(JSON.parse(checked.stdout).counts.pending_review,1);}));
+test('draft dataset is rejected by precision/recall evaluator',()=>withDir((dir,src)=>{const dataset=path.join(dir,'dataset');addSnapshot({...meta,dataset,source:src});const evaluated=spawnSync(process.execPath,[cli,'evaluate',path.join(dataset,'manifest.json')],{encoding:'utf8'});assert.equal(evaluated.status,2);assert.match(evaluated.stderr,/Dataset requires schema_version/);}));

@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.1",
+  "description": "Three synthetic HTML fixtures; manually annotated source patterns, not a real-project sample",
+  "cases": [
+    {"file":"broken.html","annotations":[{"rule_id":"HTML-001","line":4,"status":"FAIL"},{"rule_id":"HTML-004","line":7,"status":"FAIL"}]},
+    {"file":"valid.html","annotations":[]},
+    {"file":"uncertain.html","annotations":[{"rule_id":"HTML-004","line":3,"status":"FAIL"},{"rule_id":"HTML-014","line":3,"status":"UNVERIFIED"}]}
+  ]
+}

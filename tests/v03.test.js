@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {analyzeHtml} from '../src/html-analysis.js';
+import {spawnSync} from 'node:child_process';
+import fs from 'node:fs';import os from 'node:os';import path from 'node:path';
+const ids=s=>analyzeHtml(s).map(f=>f.id);
+test('ignores tags inside comments and script text',()=>{assert.ok(!ids('<html lang="en"><head><title>x</title><meta name="viewport"></head><body><!-- <img src="x"> --><script>const x="<img src=x>";</script></body></html>').includes('HTML-001'));});
+test('recognizes wrapping, for/id and aria input labels',()=>{const s='<label>Email <input></label><label for="x">Name</label><input id="x"><input aria-label="Search">';assert.ok(!ids(s).includes('HTML-004'));});
+test('detects unlabeled input even when id exists',()=>{assert.ok(ids('<input id="orphan">').includes('HTML-004'));});
+test('detects duplicate ids and nested interactive elements',()=>{const x=ids('<a href="#"><button>Go</button></a><div id="x"></div><div id="x"></div>');assert.ok(x.includes('HTML-008'));assert.ok(x.includes('HTML-011'));});
+test('confirmed error exits 1 while candidate warning does not',()=>{const d=fs.mkdtempSync(path.join(os.tmpdir(),'uiux-v03-'));try{fs.writeFileSync(path.join(d,'a.html'),'<img src="x">');let p=spawnSync(process.execPath,['src/cli.js','audit',d,'--format','json'],{encoding:'utf8'});assert.equal(p.status,1);fs.writeFileSync(path.join(d,'a.html'),'<a target="_blank" href="x">X</a>');p=spawnSync(process.execPath,['src/cli.js','audit',d,'--format','json'],{encoding:'utf8'});assert.equal(p.status,0);}finally{fs.rmSync(d,{recursive:true,force:true});}});
