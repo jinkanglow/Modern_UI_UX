@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "id": "HTML-014",
+  "mechanism": "Clickable controls must expose semantics and keyboard operation.",
+  "tasks": [
+    "navigation",
+    "keyboard"
+  ],
+  "detector": {
+    "type": "existing_static_audit",
+    "rule_id": "HTML-014"
+  },
+  "evidence": {
+    "kind": "source_pattern",
+    "limitation": "A source pattern alone does not prove a user-task failure or WCAG nonconformance."
+  },
+  "decision": {
+    "detected": "SOURCE_PATTERN_OR_CANDIDATE",
+    "not_detected": "NO_PATTERN_OBSERVED",
+    "runtime_claim_allowed": false
+  },
+  "remediation": {
+    "policy": "Propose the smallest task-preserving change; require human confirmation before editing."
+  },
+  "verification": {
+    "method": "repeat_same_static_case_then_task_browser_contract_if_applicable"
+  },
+  "cases": [
+    {
+      "name": "trigger",
+      "extension": "html",
+      "source": "<div onclick=\"go()\">Go</div>",
+      "expect_detected": true
+    },
+    {
+      "name": "counterexample",
+      "extension": "html",
+      "source": "<button onclick=\"go()\">Go</button>",
+      "expect_detected": false
+    },
+    {
+      "name": "boundary",
+      "extension": "html",
+      "source": "<div role=\"button\" tabindex=\"0\" onclick=\"go()\">Go</div>",
+      "expect_detected": true
+    }
+  ]
+}

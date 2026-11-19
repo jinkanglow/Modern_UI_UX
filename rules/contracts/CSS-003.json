@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "id": "CSS-003",
+  "mechanism": "Fixed layout assumptions may obstruct smaller viewports.",
+  "tasks": [
+    "mobile"
+  ],
+  "detector": {
+    "type": "existing_static_audit",
+    "rule_id": "CSS-003"
+  },
+  "evidence": {
+    "kind": "source_pattern",
+    "limitation": "A source pattern alone does not prove a user-task failure or WCAG nonconformance."
+  },
+  "decision": {
+    "detected": "SOURCE_PATTERN_OR_CANDIDATE",
+    "not_detected": "NO_PATTERN_OBSERVED",
+    "runtime_claim_allowed": false
+  },
+  "remediation": {
+    "policy": "Propose the smallest task-preserving change; require human confirmation before editing."
+  },
+  "verification": {
+    "method": "repeat_same_static_case_then_task_browser_contract_if_applicable"
+  },
+  "cases": [
+    {
+      "name": "trigger",
+      "extension": "css",
+      "source": "main {width: 900px;}",
+      "expect_detected": true
+    },
+    {
+      "name": "counterexample",
+      "extension": "css",
+      "source": "main {width: 100%;}",
+      "expect_detected": false
+    },
+    {
+      "name": "boundary",
+      "extension": "css",
+      "source": "main {width: 699px;}",
+      "expect_detected": false
+    }
+  ]
+}

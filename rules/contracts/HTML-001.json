@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "id": "HTML-001",
+  "mechanism": "Meaning must survive when visual media is unavailable.",
+  "tasks": [
+    "content",
+    "accessibility"
+  ],
+  "detector": {
+    "type": "existing_static_audit",
+    "rule_id": "HTML-001"
+  },
+  "evidence": {
+    "kind": "source_pattern",
+    "limitation": "A source pattern alone does not prove a user-task failure or WCAG nonconformance."
+  },
+  "decision": {
+    "detected": "SOURCE_PATTERN_OR_CANDIDATE",
+    "not_detected": "NO_PATTERN_OBSERVED",
+    "runtime_claim_allowed": false
+  },
+  "remediation": {
+    "policy": "Propose the smallest task-preserving change; require human confirmation before editing."
+  },
+  "verification": {
+    "method": "repeat_same_static_case_then_task_browser_contract_if_applicable"
+  },
+  "cases": [
+    {
+      "name": "trigger",
+      "extension": "html",
+      "source": "<img src=\"photo.png\">",
+      "expect_detected": true
+    },
+    {
+      "name": "counterexample",
+      "extension": "html",
+      "source": "<img src=\"photo.png\" alt=\"Portrait\">",
+      "expect_detected": false
+    },
+    {
+      "name": "boundary",
+      "extension": "html",
+      "source": "<img src=\"divider.png\" alt=\"\">",
+      "expect_detected": false
+    }
+  ]
+}

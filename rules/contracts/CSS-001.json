@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "id": "CSS-001",
+  "mechanism": "Keyboard users must perceive the active target.",
+  "tasks": [
+    "keyboard",
+    "accessibility"
+  ],
+  "detector": {
+    "type": "existing_static_audit",
+    "rule_id": "CSS-001"
+  },
+  "evidence": {
+    "kind": "source_pattern",
+    "limitation": "A source pattern alone does not prove a user-task failure or WCAG nonconformance."
+  },
+  "decision": {
+    "detected": "SOURCE_PATTERN_OR_CANDIDATE",
+    "not_detected": "NO_PATTERN_OBSERVED",
+    "runtime_claim_allowed": false
+  },
+  "remediation": {
+    "policy": "Propose the smallest task-preserving change; require human confirmation before editing."
+  },
+  "verification": {
+    "method": "repeat_same_static_case_then_task_browser_contract_if_applicable"
+  },
+  "cases": [
+    {
+      "name": "trigger",
+      "extension": "css",
+      "source": "button {outline:none;}",
+      "expect_detected": true
+    },
+    {
+      "name": "counterexample",
+      "extension": "css",
+      "source": "button {outline:2px solid blue;}",
+      "expect_detected": false
+    },
+    {
+      "name": "boundary",
+      "extension": "css",
+      "source": "button:focus-visible {outline:0;}",
+      "expect_detected": true
+    }
+  ]
+}
