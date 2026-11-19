@@ -1,0 +1,4 @@
+import fs from 'node:fs';
+import path from 'node:path';
+export const defaults={schema_version:'0.6',audit:{fail_on:'error',exclude:['node_modules','.git','dist','build','coverage','.next'],max_file_bytes:1048576}};
+export function loadConfig(target){let base=path.resolve(target);if(fs.existsSync(base)&&fs.statSync(base).isFile())base=path.dirname(base);const file=path.join(base,'uiux.config.json');if(!fs.existsSync(file))return defaults;const user=JSON.parse(fs.readFileSync(file,'utf8'));if(!user||typeof user!=='object'||!user.audit||typeof user.audit!=='object')throw Error('Invalid uiux.config.json: expected audit object');const a={...defaults.audit,...user.audit};if(!['error','warning','none'].includes(a.fail_on)||!Array.isArray(a.exclude)||!Number.isInteger(a.max_file_bytes)||a.max_file_bytes<1)throw Error('Invalid audit configuration');return {schema_version:'0.6',audit:a};}

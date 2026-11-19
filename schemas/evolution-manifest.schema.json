@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/uiux/evolution-manifest.schema.json",
+  "title": "UI/UX Policy Evolution Manifest",
+  "type": "object",
+  "required": ["schema_version", "policy_id", "objective", "episodes"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "policy_id": {"type": "string", "minLength": 1},
+    "objective": {"type": "object", "required": ["min_improvement"], "properties": {"min_improvement": {"type": "number"}}, "additionalProperties": true},
+    "baseline": {"type": "object", "required": ["policy_id", "reward"], "properties": {"policy_id": {"type": "string"}, "reward": {"type": "number"}}, "additionalProperties": true},
+    "safety": {"type": "object", "additionalProperties": {"type": "number"}},
+    "episodes": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["id", "state", "action", "reward"], "properties": {"id": {"type": "string"}, "state": {"type": "string"}, "action": {"type": "string"}, "reward": {"type": "number"}, "terminal": {"enum": ["success", "failure", "abandoned", "blocked"]}, "evidence_id": {"type": "string"}}, "additionalProperties": true}}
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,241 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UIUX Interaction Contract v0.8",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "target",
+    "scenarios"
+  ],
+  "properties": {
+    "schema_version": {
+      "enum": [
+        "0.7",
+        "0.8"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timeout_ms": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 30000
+    },
+    "scenarios": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "steps"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "steps": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "action",
+                "expect"
+              ],
+              "properties": {
+                "action": {
+                  "enum": [
+                    "click",
+                    "fill",
+                    "press",
+                    "wait",
+                    "double_click"
+                  ]
+                },
+                "selector": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "value": {
+                  "type": [
+                    "string",
+                    "number",
+                    "boolean"
+                  ]
+                },
+                "key": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "ms": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 5000
+                },
+                "state": {
+                  "enum": [
+                    "idle",
+                    "validating",
+                    "pending",
+                    "success",
+                    "error",
+                    "unknown"
+                  ]
+                },
+                "timeout_ms": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 30000
+                },
+                "expect": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "check"
+                    ],
+                    "properties": {
+                      "check": {
+                        "enum": [
+                          "visible",
+                          "hidden",
+                          "enabled",
+                          "disabled",
+                          "text",
+                          "value",
+                          "count",
+                          "request_count"
+                        ]
+                      },
+                      "selector": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "equals": {
+                        "type": [
+                          "string",
+                          "integer"
+                        ]
+                      },
+                      "timeout_ms": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 30000
+                      },
+                      "url": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "allOf": [
+                      {
+                        "if": {
+                          "properties": {
+                            "check": {
+                              "const": "request_count"
+                            }
+                          },
+                          "required": [
+                            "check"
+                          ]
+                        },
+                        "then": {
+                          "required": [
+                            "url",
+                            "equals"
+                          ]
+                        },
+                        "else": {
+                          "required": [
+                            "selector"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "routes": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/$defs/route"
+            }
+          }
+        }
+      }
+    },
+    "routes": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "$ref": "#/$defs/route"
+      }
+    }
+  },
+  "$defs": {
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "url",
+        "mode"
+      ],
+      "properties": {
+        "url": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "mode": {
+          "enum": [
+            "fulfill",
+            "abort"
+          ]
+        },
+        "status": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 599
+        },
+        "body": {
+          "type": "string"
+        },
+        "content_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "delay_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5000
+        },
+        "abort_reason": {
+          "enum": [
+            "failed",
+            "timedout",
+            "internetdisconnected",
+            "connectionrefused"
+          ]
+        }
+      }
+    }
+  }
+}

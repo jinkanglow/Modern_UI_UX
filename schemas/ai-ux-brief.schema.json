@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/uiux/ai-ux-brief.schema.json",
+  "title": "AI UX Decision Brief",
+  "type": "object",
+  "required": ["primary_actor", "user_goal", "primary_scenario", "completion_condition", "ai_policy", "verification"],
+  "properties": {
+    "primary_actor": {"type": "string", "minLength": 1},
+    "user_goal": {"type": "string", "minLength": 1},
+    "primary_scenario": {"type": "string", "minLength": 1},
+    "completion_condition": {"type": "string", "minLength": 1},
+    "non_goals": {"type": "array", "items": {"type": "string"}},
+    "ai_policy": {
+      "type": "object",
+      "required": ["must_show", "must_support"],
+      "properties": {
+        "operation_class": {"enum": ["suggest", "draft", "prepare", "execute", "monitor"]},
+        "may_suggest": {"type": "boolean"},
+        "may_execute": {"type": "boolean"},
+        "requires_authorization_for": {"type": "array", "items": {"type": "string"}},
+        "must_show": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "must_support": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    },
+    "failure_conditions": {"type": "array", "items": {"type": "string"}},
+    "verification": {
+      "type": "object",
+      "required": ["required_states"],
+      "properties": {
+        "required_states": {"type": "array", "minItems": 3, "items": {"type": "string"}},
+        "requires_browser_evidence": {"type": "boolean"},
+        "requires_backend_receipt": {"type": "boolean"}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

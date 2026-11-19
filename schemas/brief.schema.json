@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "primary_actor",
+    "primary_task",
+    "completion_condition",
+    "business_objective"
+  ],
+  "properties": {
+    "primary_actor": {
+      "type": "string",
+      "minLength": 1
+    },
+    "primary_task": {
+      "type": "string",
+      "minLength": 1
+    },
+    "completion_condition": {
+      "type": "string",
+      "minLength": 1
+    },
+    "business_objective": {
+      "type": "string",
+      "minLength": 1
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "impact",
+          "reversibility"
+        ],
+        "properties": {
+          "impact": {
+            "type": "string"
+          },
+          "reversibility": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

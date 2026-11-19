@@ -1,0 +1,81 @@
+{
+  "name": "uiux-decision-engine",
+  "version": "4.7.0",
+  "description": "Evidence-oriented UI/UX auditing with in-process task assurance, traceable interaction contracts and cross-framework fixtures",
+  "type": "module",
+  "bin": {
+    "uiux": "./src/cli.js"
+  },
+  "scripts": {
+    "test": "node --test",
+    "audit:example": "node src/cli.js audit examples --format markdown",
+    "test:golden": "node --test tests/golden.test.js",
+    "test:jsx": "node --test tests/jsx.test.js",
+    "test:benchmark": "node --test tests/benchmark.test.js",
+    "test:interaction": "node --test tests/interaction.test.js",
+    "test:e2e": "node --test tests/browser-e2e.test.js",
+    "test:browser": "node --test tests/browser-e2e.test.js tests/framework-browser-e2e.test.js",
+    "test:contract": "node --test tests/v10.test.js",
+    "test:evaluation": "node --test tests/evaluate.test.js",
+    "evaluate": "node src/cli.js evaluate tests/fixtures/evaluation/manifest.json",
+    "evaluate:v12": "node src/cli.js evaluate tests/fixtures/evaluation-v12/manifest.json",
+    "test:review": "node --test tests/review.test.js",
+    "test:evidence": "node --test tests/evidence.test.js",
+    "test:correlation": "node --test tests/evidence-correlation.test.js",
+    "test:fixture": "node --test tests/fixture-server.test.js",
+    "test:coverage": "node --test tests/coverage.test.js",
+    "test:tasks": "node --test tests/tasks.test.js",
+    "test:framework": "node --test tests/framework-fixtures.test.js",
+    "test:framework-browser": "node --test tests/framework-browser-e2e.test.js",
+    "test:assurance": "node --test tests/assurance.test.js",
+    "test:doctor": "node --test tests/doctor.test.js",
+    "test:ci-framework": "node scripts/ci-framework-assurance.js",
+    "verify:ci-bundle": "node scripts/verify-ci-bundle.js",
+    "test:evaluation-gate": "node --test tests/evaluation-gate.test.js",
+    "test:evaluation-triage": "node --test tests/evaluation-triage.test.js",
+    "test:provenance": "node --test tests/provenance-check.test.js",
+    "test:review-audit": "node --test tests/review-audit.test.js",
+    "test:export-gate": "node --test tests/export-gate.test.js",
+    "test:rule-contracts": "node --test tests/rule-contracts.test.js",
+    "test:state-machine": "node --test tests/state-machine.test.js",
+    "test:browser-state": "node --test tests/browser-state-bridge.test.js",
+    "test:browser-timeline": "node --test tests/browser-timeline.test.js",
+    "test:continuous": "node --test tests/continuous-observer.test.js",
+    "test:causality": "node --test tests/continuous-v43.test.js",
+    "test:quality": "node --test tests/quality-brief.test.js",
+    "test:evolution": "node --test tests/evolution.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "files": [
+    "src",
+    "schemas",
+    "rules",
+    "references",
+    "skills",
+    "examples",
+    "README.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "EVALUATION_PROTOCOL.md",
+    "QUALITY_SPEC.md",
+    "RELEASE_NOTES_v4.5.md",
+    "RELEASE_NOTES_v4.6.md",
+    "RELEASE_NOTES_v4.7.md"
+  ],
+  "optionalDependencies": {
+    "playwright": "^1.55.0",
+    "axe-core": "^4.10.0"
+  },
+  "dependencies": {
+    "typescript": "^5.7.0"
+  },
+  "devDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "vue": "^3.5.0",
+    "vite": "^5.4.0"
+  }
+}
