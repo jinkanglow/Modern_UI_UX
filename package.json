@@ -45,10 +45,18 @@
     "test:quality": "node --test tests/quality-brief.test.js",
     "test:evolution": "node --test tests/evolution.test.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jinkanglow/Modern_UI_UX.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jinkanglow/Modern_UI_UX/issues"
+  },
+  "homepage": "https://github.com/jinkanglow/Modern_UI_UX#readme",
   "engines": {
     "node": ">=20"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "files": [
     "src",
     "schemas",

@@ -1,4 +1,4 @@
-# UI/UX Decision Engine 4.5 specification
+# UI/UX Decision Engine 4.7 specification
 
 ## Product promise
 
